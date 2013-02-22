@@ -9,7 +9,6 @@
 	<version>1.0.0-BUILD-SNAPSHOT</version>
 
 	<modules>
-		<module>tomcat_startup_listener</module>
 		<module>play-jpa-plugin</module>
 	</modules>
 
