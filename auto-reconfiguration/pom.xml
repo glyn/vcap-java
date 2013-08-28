@@ -10,6 +10,7 @@
 
 	<properties>
 		<java.version>1.6</java.version>
+		<javax.servlet.api.version>3.0.1</javax.servlet.api.version>
 		<cloudfoundry.runtime.version>0.8.5</cloudfoundry.runtime.version>
 		<spring.amqp.version>1.0.0.RELEASE</spring.amqp.version>
 		<spring-data-mongo.version>1.0.1.RELEASE</spring-data-mongo.version>
@@ -43,6 +44,13 @@
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
 			<version>1.1.1</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${javax.servlet.api.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
