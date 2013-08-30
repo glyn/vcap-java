@@ -1,10 +1,12 @@
 package org.cloudfoundry.reconfiguration.spring.web;
 
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
 
 /**
  * Cloud Foundry {@link ServletContainerInitializer}
@@ -64,6 +66,8 @@ public final class CloudServletContainerInitializer implements ServletContainerI
 	augmentedContextConfigLocations[n] = additionalContextConfigLocation;
 	String augmentedContextConfigLocationValue = ...;
 	// TODO: join augmentedContextConfigLocations with commas to form augmentedContextConfigLocationValue
+	
+	// PROBLEM: setInitParameter does not modify an existing parameter.
 	servletContext.setInitParameter(CONTEXT_CONFIG_LOCATION, augmentedContextConfigLocationValue);
     }
 
