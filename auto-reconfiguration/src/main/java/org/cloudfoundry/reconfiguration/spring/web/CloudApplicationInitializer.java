@@ -47,7 +47,7 @@ import org.springframework.web.servlet.FrameworkServlet;
  * @author Glyn Normington
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
-final class CloudApplicationInitializer implements WebApplicationInitializer {
+public final class CloudApplicationInitializer implements WebApplicationInitializer {
 
     private final Logger logger = Logger.getLogger(CloudApplicationInitializer.class.getName());
 
@@ -56,6 +56,7 @@ final class CloudApplicationInitializer implements WebApplicationInitializer {
      */
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
+	logger.log(Level.INFO, "Entered CloudApplicationInitializer.onStartup");
 	for (ConfigurableApplicationContext applicationContext : getConfigurableApplicationContexts(servletContext)) {
 	    /*
 	     * Add a suitable BFPP to the application context.
@@ -65,7 +66,7 @@ final class CloudApplicationInitializer implements WebApplicationInitializer {
 	     * context setter method.
 	     */
 	    BeanFactoryPostProcessor bfpp = createBeanFactoryPostProcessor();
-	    logger.log(Level.FINE, "Adding bean factory post-processor '" + bfpp.getClass().getName()
+	    logger.log(Level.INFO, "Adding bean factory post-processor '" + bfpp.getClass().getName()
 		    + "' to application context '" + applicationContext + "'");
 	    applicationContext.addBeanFactoryPostProcessor(bfpp);
 
@@ -78,11 +79,12 @@ final class CloudApplicationInitializer implements WebApplicationInitializer {
 	    addPropertiesBean(applicationContext, "__appCloudHibernateMySQLReplacementProperties", "hibernate.dialect",
 		    "org.hibernate.dialect.MySQLDialect");
 	}
+	logger.log(Level.INFO, "Exiting CloudApplicationInitializer.onStartup");
     }
 
     private void addPropertiesBean(ConfigurableApplicationContext applicationContext, String beanName, String key,
 	    String value) {
-	logger.log(Level.FINE, "Adding properties bean '" + beanName + "' with property <'" + key + "', '" + value
+	logger.log(Level.INFO, "Adding properties bean '" + beanName + "' with property <'" + key + "', '" + value
 		+ "'>" + "' to application context '" + applicationContext + "'");
 	Properties props = new Properties();
 	props.put(key, value);
@@ -92,9 +94,12 @@ final class CloudApplicationInitializer implements WebApplicationInitializer {
     private Set<ConfigurableApplicationContext> getConfigurableApplicationContexts(ServletContext servletContext) {
 	Set<ConfigurableApplicationContext> applicationContexts = new HashSet<ConfigurableApplicationContext>();
 	for (String servletName : getServletNames(servletContext)) {
+	    logger.log(Level.INFO, "Processing servlet " + servletName);
 	    ApplicationContext applicationContext = getApplicationContextForServlet(servletContext, servletName);
+	    logger.log(Level.INFO, "Application context detected " + applicationContext);
 	    addApplicationContextAncestry(applicationContexts, applicationContext);
 	}
+	logger.log(Level.INFO, "Application contexts detected: " + applicationContexts);
 	return applicationContexts;
     }
 
@@ -109,6 +114,7 @@ final class CloudApplicationInitializer implements WebApplicationInitializer {
     private void addApplicationContext(Set<ConfigurableApplicationContext> applicationContexts,
 	    ApplicationContext applicationContext) {
 	if (applicationContext instanceof ConfigurableApplicationContext) {
+	    logger.log(Level.INFO, "Found ConfigurableApplicationContext " + applicationContext);
 	    applicationContexts.add((ConfigurableApplicationContext) applicationContext);
 	} else {
 	    logger.log(Level.WARNING, "Non-configurable application context encountered: " + applicationContext);
@@ -116,7 +122,9 @@ final class CloudApplicationInitializer implements WebApplicationInitializer {
     }
 
     private Set<String> getServletNames(ServletContext servletContext) {
-	return servletContext.getServletRegistrations().keySet();
+	Set<String> servletNames = servletContext.getServletRegistrations().keySet();
+	logger.log(Level.INFO, "Servlet names: " + servletNames);
+	return servletNames;
     }
 
     private WebApplicationContext getApplicationContextForServlet(ServletContext servletContext, String servletName) {
