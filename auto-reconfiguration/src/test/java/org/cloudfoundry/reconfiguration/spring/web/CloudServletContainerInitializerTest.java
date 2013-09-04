@@ -23,7 +23,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.servlet.FrameworkServlet;
 
-public class CloudApplicationInitializerTest {
+public class CloudServletContainerInitializerTest {
 
     private static final String TEST_SERVLET_NAME = "testServlet";
 
@@ -43,9 +43,9 @@ public class CloudApplicationInitializerTest {
 	ServletContext servletContext = mock(ServletContext.class);
 	stubServletRegistrations(servletContext);
 	stubApplicationContexts(servletContext);
-	CloudApplicationInitializer cloudApplicationInitializer = new CloudApplicationInitializer();
+	CloudServletContainerInitializer cloudApplicationInitializer = new CloudServletContainerInitializer();
 	
-	cloudApplicationInitializer.onStartup(servletContext);
+	cloudApplicationInitializer.onStartup(null, servletContext);
 	
 	verifyBeanFactoryPostProcessorAdded(webAC);
 	verifyBeanFactoryPostProcessorAdded(rootAC);

@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
@@ -13,20 +14,17 @@ import org.cloudfoundry.reconfiguration.CloudAutoStagingBeanFactoryPostProcessor
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.FrameworkServlet;
 
 /**
- * The {@link CloudApplicationInitializer} adds a
+ * The {@link CloudServletContainerInitializer} adds a
  * {@link CloudAutoStagingBeanFactoryPostProcessor} bean factory post processor
  * to all configurable application contexts, and to their parents, associated
  * with servlets. It also adds several property beans to configure each
  * application context. See
- * <code>src/main/resources/META-=INF/cloud/cloudfoundry-auto-reconfiguration-context.xml</code>
+ * <code>src/main/resources/META-INF/cloud/cloudfoundry-auto-reconfiguration-context.xml</code>
  * for corresponding bean definitions.
  * <p>
  * This class requires that, when the {@link #onStartup} method is called, all
@@ -37,8 +35,9 @@ import org.springframework.web.servlet.FrameworkServlet;
  * refreshed.
  * <p>
  * To satisfy this requirement, this class implements
- * {@link WebApplicationInitializer} and positions itself as late as possible in
- * the ordering of {@link WebApplicationInitializer}s.
+ * {@link ServletContainerInitializer} and is ordered after
+ * <code>spring_web</code> in
+ * <code>src/main/resources/META-INF/services/web-fragment.xml</code>.
  * <p>
  * This class is coded defensively to avoid negatively impacting unusual types
  * of application.
@@ -46,16 +45,15 @@ import org.springframework.web.servlet.FrameworkServlet;
  * 
  * @author Glyn Normington
  */
-@Order(Ordered.LOWEST_PRECEDENCE)
-public final class CloudApplicationInitializer implements WebApplicationInitializer {
+public final class CloudServletContainerInitializer implements ServletContainerInitializer {
 
-    private final Logger logger = Logger.getLogger(CloudApplicationInitializer.class.getName());
+    private final Logger logger = Logger.getLogger(CloudServletContainerInitializer.class.getName());
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void onStartup(ServletContext servletContext) throws ServletException {
+    public void onStartup(Set<Class<?>> _, ServletContext servletContext) throws ServletException {
 	logger.log(Level.INFO, "Entered CloudApplicationInitializer.onStartup");
 	for (ConfigurableApplicationContext applicationContext : getConfigurableApplicationContexts(servletContext)) {
 	    /*
